@@ -7,6 +7,8 @@ import matplotlib.patches as mpatches
 from matplotlib.ticker import FuncFormatter
 import pandas as pd
 from prefect import flow, task
+from prefect_slack import SlackCredentials
+from prefect_slack.messages import send_chat_message
 import seaborn as sns
 
 from flows import env
@@ -75,9 +77,9 @@ def build_report(stock_data):
 
     # mkdown data
     sd = stock_data
-    mkdown_data = f"""## {sd['company']} ({sd['ticker']}) | {sd['weburl']}
+    mkdown_data = f"""{sd['company']} ({sd['ticker']}) | {sd['weburl']}
 GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]} 
-**cuurent price:{sd["current_price"]}** 52WeekHigh:{sd["52WeekHigh"]} 52WeekLow:{sd["52WeekLow"]}
+*current price : {sd["current_price"]}*\t52WeekHigh : {sd["52WeekHigh"]}\t52WeekLow : {sd["52WeekLow"]}
     """
     print(mkdown_data)
     with open(const.CURRENT_MKDOWN_FILE, "w+") as f:
@@ -144,6 +146,42 @@ GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]}
     axes[1].yaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     plt.tight_layout()
     plt.savefig(const.CURRENT_PLOT_FILE)
+    return mkdown_data
+
+
+@task
+async def send_prospect_report(
+    slack_credentials,
+    mkdown_data,
+):
+    client = slack_credentials.get_client()
+    blocks = [
+        {
+            "type": "section",
+            "text": {"type": "plain_text", "text": "This is NOT financial advice"},
+        },
+        {
+            "type": "section",
+            "text": {"type": "mrkdwn", "text": mkdown_data},
+        },
+    ]
+    send_chat_message(
+        slack_credentials=slack_credentials,
+        slack_blocks=blocks,
+        channel="bot-test",
+    )
+    result = await client.files_upload_v2(
+        file=const.CURRENT_PLOT_FILE,
+        channels=const.CHANNELS,
+        title="bomb proof technical analysis",
+    )
+    # can't do this because not paid workspace
+    # https://stackoverflow.com/questions/58186399/how-to-create-a-slack-message-containing-an-uploaded-image
+    # would also need to change the token type to user instead of bot
+    # file_id = json.loads(result.req_args["params"]["files"])[0]["id"]
+    # result = await client.files_sharedPublicURL(
+    #     file=file_id,
+    # )
 
 
 @flow(log_prints=True)
@@ -151,8 +189,12 @@ def prospector():
     stock = pick_random_stock()
     save_current_stock(stock=stock)
     stock_data = get_stock_data(stock)
-    build_report(stock_data=stock_data)
-    # send this to a slack channel
+    mkdown_data = build_report(stock_data=stock_data)
+    slack_credentials = SlackCredentials.load("slackbot-cred")
+    send_prospect_report(
+        slack_credentials=slack_credentials,
+        mkdown_data=mkdown_data,
+    )
 
 
 if __name__ == "__main__":
