@@ -1,5 +1,8 @@
+finnhub
 lxml
 pandas
 prefect>=2.0.0
 pytest
+python-dotenv
+seaborn
 ruff
