@@ -35,11 +35,11 @@ deployments:
     day_or: true
     active: true
 
-- name: trader-buy-stock
+- name: trader
   version: null
   tags: []
   description: null
-  entrypoint: flows/trader.py:trader_buy_stock
+  entrypoint: flows/trader.py:trader
   parameters: {}
   work_pool:
     name: humpday
@@ -51,11 +51,11 @@ deployments:
     day_or: true
     active: true
 
-- name: trader-sell-stock
+- name: reporter
   version: null
   tags: []
   description: null
-  entrypoint: flows/trader.py:trader_sell_stock
+  entrypoint: flows/reporter.py:reporter
   parameters: {}
   work_pool:
     name: humpday
