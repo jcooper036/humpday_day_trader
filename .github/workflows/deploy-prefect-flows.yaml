@@ -1,0 +1,20 @@
+name: Deploy Prefect flow
+
+on:
+  push:
+    branches:
+      - trunk
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prefect Deploy
+        env:
+          PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
+          PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
+        run: |
+          pip install -r requirements.txt
+          prefect deploy --all
