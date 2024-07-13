@@ -1,2 +1,5 @@
+lxml
+pandas
 prefect>=2.0.0
+pytest
 ruff
