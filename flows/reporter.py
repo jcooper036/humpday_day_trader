@@ -2,7 +2,7 @@ from prefect import flow
 
 
 @flow(log_prints=True)
-def trader_sell_stock():
+def reporter():
     print("great trades")
     # read the stock name for the file
     # read the parquet information, make sure the two match
