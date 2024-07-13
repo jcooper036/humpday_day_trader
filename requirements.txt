@@ -1,4 +1,4 @@
-finnhub
+finnhub-python
 lxml
 pandas
 prefect>=2.0.0
