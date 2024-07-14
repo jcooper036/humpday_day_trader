@@ -77,9 +77,9 @@ def build_report(stock_data):
 
     # mkdown data
     sd = stock_data
-    mkdown_data = f"""{sd['company']} ({sd['ticker']}) | {sd['weburl']}
-GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]} 
-*current price : {sd["current_price"]}*\t52WeekHigh : {sd["52WeekHigh"]}\t52WeekLow : {sd["52WeekLow"]}
+    mkdown_data = f"""{sd['company']} ({sd['ticker']}) | :mag: {sd['weburl']}
+:factory: GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]} 
+:moneybag: *current price : {sd["current_price"]}*\t52WeekHigh : {sd["52WeekHigh"]}\t52WeekLow : {sd["52WeekLow"]}
     """
     print(mkdown_data)
     with open(const.CURRENT_MKDOWN_FILE, "w+") as f:
@@ -117,7 +117,7 @@ GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]}
     pdf = insider_price_month_average.merge(ar_data, on="month", how="outer")
 
     # build a plot and save it
-    _, axes = plt.subplots(2, 1, figsize=(20, 10))
+    _, axes = plt.subplots(2, 1, figsize=(12, 6))
     sns.lineplot(
         pdf,
         x="month",
@@ -125,7 +125,7 @@ GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]}
         ax=axes[0],
     )
     axes[0].tick_params(axis="x", rotation=45)
-    axes[0].set_title("Insider sell price")
+    axes[0].set_title(f"({stock_data['ticker']}) Insider sell price")
 
     patches = [
         ("strongBuy", "darkblue"),
@@ -142,7 +142,8 @@ GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]}
     plt.legend(handles=legend_handles)
 
     axes[1].tick_params(axis="x", rotation=45)
-    axes[1].set_title("Analyst reccomendations")
+    axes[1].set_ylabel("number of analysts")
+    axes[1].set_title(f"({stock_data['ticker']}) Analyst reccomendations")
     axes[1].yaxis.set_major_formatter(FuncFormatter(lambda x, _: int(x)))
     plt.tight_layout()
     plt.savefig(const.CURRENT_PLOT_FILE)
@@ -158,11 +159,22 @@ async def send_prospect_report(
     blocks = [
         {
             "type": "section",
-            "text": {"type": "plain_text", "text": "This is NOT financial advice"},
+            "text": {
+                "type": "plain_text",
+                "text": ":gem: This is NOT financial advice :gem:",
+            },
         },
         {
+            "type": "header",
+            "text": {
+                "type": "plain_text",
+                "text": mkdown_data.split(" | ")[0],
+            },
+        },
+        {"type": "divider"},
+        {
             "type": "section",
-            "text": {"type": "mrkdwn", "text": mkdown_data},
+            "text": {"type": "mrkdwn", "text": mkdown_data.split(" | ")[1]},
         },
     ]
     send_chat_message(
