@@ -5,3 +5,7 @@ CHANNELS = [
     "C07C4S4ULMU",  # bot-test
     # "C07CBF97UQJ",  # humpday-day-trader
 ]
+ALPACA_URL = {
+    "live": "https://api.alpaca.markets",
+    "paper": "https://paper-api.alpaca.markets/v2",
+}
