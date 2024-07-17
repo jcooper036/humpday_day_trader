@@ -24,13 +24,13 @@ deployments:
   tags: []
   description: null
   entrypoint: flows/prospecter.py:prospector
-  parameters: {"slack_channel_name": "humday-day-trader"}
+  parameters: {"slack_channel_name": "humpday-day-trader"}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 0 23 * * *
+  - cron: 5 23 * * *
     timezone: America/Denver
     day_or: true
     active: true
@@ -40,7 +40,7 @@ deployments:
   tags: []
   description: null
   entrypoint: flows/trader.py:trader
-  parameters: {"slack_channel_name": "humday-day-trader", "account_type": "paper"}
+  parameters: {"slack_channel_name": "humpday-day-trader", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
@@ -62,7 +62,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 1 23 * * 3
+  - cron: 6 23 * * 3
     timezone: America/Denver
     day_or: true
     active: true
@@ -73,7 +73,7 @@ deployments:
   tags: []
   description: null
   entrypoint: flows/reporter.py:reporter
-  parameters: {"slack_channel_name": "humday-day-trader", "account_type": "paper"}
+  parameters: {"slack_channel_name": "humpday-day-trader", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
@@ -96,7 +96,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 5 23 * * 3
+  - cron: 8 23 * * 3
     timezone: America/Denver
     day_or: true
     active: true
