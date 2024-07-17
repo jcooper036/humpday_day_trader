@@ -19,28 +19,28 @@ pull:
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: prospector
+- name: prospector_live
   version: null
   tags: []
   description: null
   entrypoint: flows/prospecter.py:prospector
-  parameters: {}
+  parameters: {"slack_channel_name": "humday-day-trader"}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 0 9 * * *
+  - cron: 0 23 * * *
     timezone: America/Denver
     day_or: true
     active: true
 
-- name: trader
+- name: trader_live
   version: null
   tags: []
   description: null
   entrypoint: flows/trader.py:trader
-  parameters: {}
+  parameters: {"slack_channel_name": "humday-day-trader", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
@@ -51,18 +51,52 @@ deployments:
     day_or: true
     active: true
 
-- name: reporter
+- name: trader_test
+  version: null
+  tags: []
+  description: null
+  entrypoint: flows/trader.py:trader
+  parameters: {"slack_channel_name": "test", "account_type": "paper"}
+  work_pool:
+    name: humpday
+    work_queue_name: null
+    job_variables: {}
+  schedules:
+  - cron: 1 23 * * 3
+    timezone: America/Denver
+    day_or: true
+    active: true
+
+
+- name: reporter_live
   version: null
   tags: []
   description: null
   entrypoint: flows/reporter.py:reporter
-  parameters: {}
+  parameters: {"slack_channel_name": "humday-day-trader", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
   - cron: 30 10 * * 3
+    timezone: America/Denver
+    day_or: true
+    active: true
+
+
+- name: reporter_test
+  version: null
+  tags: []
+  description: null
+  entrypoint: flows/reporter.py:reporter
+  parameters: {"slack_channel_name": "test", "account_type": "paper"}
+  work_pool:
+    name: humpday
+    work_queue_name: null
+    job_variables: {}
+  schedules:
+  - cron: 5 23 * * 3
     timezone: America/Denver
     day_or: true
     active: true

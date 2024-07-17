@@ -198,7 +198,8 @@ async def send_prospect_report(
 
 
 @flow(log_prints=True)
-def prospector(slack_channel: const.SlackChannel = const.CHANNELS["test"]):
+def prospector(slack_channel_name: str = "bot-test"):
+    slack_channel = const.CHANNELS[slack_channel_name]
     stock = pick_random_stock()
     save_current_stock(stock=stock)
     stock_data = get_stock_data(stock)

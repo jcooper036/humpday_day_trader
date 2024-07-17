@@ -12,8 +12,8 @@ class SlackChannel(BaseModel):
 
 
 CHANNELS = {
-    "test": SlackChannel(id="C07C4S4ULMU", name="bot-test"),
-    "live": SlackChannel(id="C07CBF97UQJ", name="humpday-day-trader"),
+    "bot-test": SlackChannel(id="C07C4S4ULMU", name="bot-test"),
+    "humpday-day-trader": SlackChannel(id="C07CBF97UQJ", name="humpday-day-trader"),
 }
 
 

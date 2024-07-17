@@ -73,13 +73,14 @@ def get_market_price(ticker: str) -> float:
 @flow(log_prints=True)
 def trader(
     account_type: AccountType = AccountType.PAPER,
-    slack_channel: const.SlackChannel = const.CHANNELS["test"],
+    slack_channel_name: str = "bot-test",
 ):
 
     # get the current ticker
     with open(const.CURRENT_STOCK_FILE, "r") as f:
         ticker = f.readlines()[0]
     print(ticker)
+    slack_channel = const.CHANNELS[slack_channel_name]
     market_price = get_market_price(ticker=ticker)
     order = submit_buy_order(
         ticker=ticker,
