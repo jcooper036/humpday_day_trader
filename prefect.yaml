@@ -30,7 +30,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 5 23 * * *
+  - cron: 0 9 * * 3
     timezone: America/Denver
     day_or: true
     active: true
@@ -56,13 +56,13 @@ deployments:
   tags: []
   description: null
   entrypoint: flows/trader.py:trader
-  parameters: {"slack_channel_name": "test", "account_type": "paper"}
+  parameters: {"slack_channel_name": "bot-test", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 6 23 * * 3
+  - cron: 2 9 * * 3
     timezone: America/Denver
     day_or: true
     active: true
@@ -90,13 +90,13 @@ deployments:
   tags: []
   description: null
   entrypoint: flows/reporter.py:reporter
-  parameters: {"slack_channel_name": "test", "account_type": "paper"}
+  parameters: {"slack_channel_name": "bot-test", "account_type": "paper"}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 8 23 * * 3
+  - cron: 8 9 * * 3
     timezone: America/Denver
     day_or: true
     active: true
