@@ -154,6 +154,7 @@ def build_report(stock_data):
 async def send_prospect_report(
     slack_credentials,
     mkdown_data,
+    slack_channel: const.SlackChannel,
 ):
     client = slack_credentials.get_client()
     blocks = [
@@ -180,11 +181,11 @@ async def send_prospect_report(
     send_chat_message(
         slack_credentials=slack_credentials,
         slack_blocks=blocks,
-        channel="bot-test",
+        channel=slack_channel.name,
     )
     result = await client.files_upload_v2(
         file=const.CURRENT_PLOT_FILE,
-        channels=const.CHANNELS,
+        channels=slack_channel.id,
         title="bomb proof technical analysis",
     )
     # can't do this because not paid workspace
@@ -197,7 +198,8 @@ async def send_prospect_report(
 
 
 @flow(log_prints=True)
-def prospector():
+def prospector(slack_channel_name: str = "bot-test"):
+    slack_channel = const.CHANNELS[slack_channel_name]
     stock = pick_random_stock()
     save_current_stock(stock=stock)
     stock_data = get_stock_data(stock)
@@ -206,6 +208,7 @@ def prospector():
     send_prospect_report(
         slack_credentials=slack_credentials,
         mkdown_data=mkdown_data,
+        slack_channel=slack_channel,
     )
 
 
