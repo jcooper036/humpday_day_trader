@@ -62,12 +62,14 @@ def sell_position(account_type: AccountType, ticker):
 
 @flow(log_prints=True)
 def reporter(
+    ticker: str | None = None,
     account_type: AccountType = AccountType.PAPER,
-    slack_channel_name: str = "bot-test",
+    slack_channel_name: const.SlackChannelName = const.SlackChannelName.BOT_TEST,
 ):
-    # get the symbol
-    with open(const.CURRENT_STOCK_FILE, "r") as f:
-        ticker = f.readlines()[0]
+
+    if ticker is None:
+        with open(const.CURRENT_STOCK_FILE, "r") as f:
+            ticker = f.readlines()[0]
     print(ticker)
     slack_channel = const.CHANNELS[slack_channel_name]
     sell_order = sell_position(account_type=account_type, ticker=ticker)

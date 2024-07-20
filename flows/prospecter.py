@@ -26,9 +26,11 @@ def get_wikipedia_nasdaq100() -> pd.DataFrame:
 
 
 @task
-def pick_random_stock() -> dict:
-    nasdaq_100 = get_wikipedia_nasdaq100()
-    return nasdaq_100.sample(n=1).to_dict("records")[0]
+def pick_stock(ticker: str | None = None) -> dict:
+    if ticker is None:
+        nasdaq_100 = get_wikipedia_nasdaq100()
+        return nasdaq_100.sample(n=1).to_dict("records")[0]
+    return {"Ticker": ticker}
 
 
 @task
@@ -53,6 +55,8 @@ def get_stock_data(stock: dict) -> dict:
     finnhub_client = finnhub.Client(api_key=env.FINNHUB_API_KEY)
     quote = finnhub_client.quote(symbol=symbol)
     data["current_price"] = quote["c"]
+    profile = finnhub_client.company_profile2(symbol=symbol)
+    data["company"] = profile["name"]
     basic_fiancials = finnhub_client.company_basic_financials(symbol, metric="all")
     data.update({m: basic_fiancials["metric"][m] for m in ["52WeekHigh", "52WeekLow"]})
     insider_info = finnhub_client.stock_insider_transactions(
@@ -78,7 +82,7 @@ def build_report(stock_data):
     # mkdown data
     sd = stock_data
     mkdown_data = f"""{sd['company']} ({sd['ticker']}) | :mag: {sd['weburl']}
-:factory: GICS Sector:{sd["gics_sector"]}\tGICS Sub-Industry:{sd["gics_sub-industry"]} 
+:factory: GICS Sector:{sd.get("gics_sector")}\tGICS Sub-Industry:{sd.get("gics_sub-industry")} 
 :moneybag: *current price : {sd["current_price"]}*\t52WeekHigh : {sd["52WeekHigh"]}\t52WeekLow : {sd["52WeekLow"]}
     """
     print(mkdown_data)
@@ -198,9 +202,12 @@ async def send_prospect_report(
 
 
 @flow(log_prints=True)
-def prospector(slack_channel_name: str = "bot-test"):
+def prospector(
+    slack_channel_name: const.SlackChannelName = const.SlackChannelName.BOT_TEST,
+    ticker: str | None = None,
+) -> str:
     slack_channel = const.CHANNELS[slack_channel_name]
-    stock = pick_random_stock()
+    stock = pick_stock(ticker=ticker)
     save_current_stock(stock=stock)
     stock_data = get_stock_data(stock)
     mkdown_data = build_report(stock_data=stock_data)
@@ -210,6 +217,7 @@ def prospector(slack_channel_name: str = "bot-test"):
         mkdown_data=mkdown_data,
         slack_channel=slack_channel,
     )
+    return stock["Ticker"]
 
 
 if __name__ == "__main__":

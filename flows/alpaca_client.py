@@ -3,11 +3,7 @@ import enum
 from alpaca.trading.client import TradingClient
 
 import flows.env as env
-
-
-class AccountType(enum.StrEnum):
-    PAPER: str = "paper"
-    LIVE: str = "live"
+from flows.const import AccountType
 
 
 def get_client(account_type):

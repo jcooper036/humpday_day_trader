@@ -1,3 +1,4 @@
+import enum
 from pydantic import BaseModel
 
 
@@ -11,13 +12,29 @@ class SlackChannel(BaseModel):
     name: str
 
 
+class AccountType(enum.StrEnum):
+    LIVE = "live"
+    PAPER = "paper"
+
+
+class SlackChannelName(enum.StrEnum):
+    BOT_TEST = "bot-test"
+    HUMPDAY_DAY_TRADER = "humpday-day-trader"
+
+
 CHANNELS = {
-    "bot-test": SlackChannel(id="C07C4S4ULMU", name="bot-test"),
-    "humpday-day-trader": SlackChannel(id="C07CBF97UQJ", name="humpday-day-trader"),
+    SlackChannelName.BOT_TEST: SlackChannel(
+        id="C07C4S4ULMU",
+        name="bot-test",
+    ),
+    SlackChannelName.HUMPDAY_DAY_TRADER: SlackChannel(
+        id="C07CBF97UQJ",
+        name="humpday-day-trader",
+    ),
 }
 
 
 ALPACA_URL = {
-    "live": "https://api.alpaca.markets",
-    "paper": "https://paper-api.alpaca.markets/v2",
+    AccountType.LIVE: "https://api.alpaca.markets",
+    AccountType.PAPER: "https://paper-api.alpaca.markets/v2",
 }
