@@ -19,84 +19,34 @@ pull:
 
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
-- name: prospector_live
+- name: humpday_basic_test
   version: null
   tags: []
   description: null
-  entrypoint: flows/prospecter.py:prospector
-  parameters: {"slack_channel_name": "humpday-day-trader"}
+  entrypoint: flows/strategies.py:humpday_day_trader_basic
+  parameters: {"slack_channel_name": "bot-test", "account_type": "paper", "prospect_buy_suspend": {"s":10}, "buy_sell_suspend": {"s":15}}
+  work_pool:
+    name: humpday
+    work_queue_name: null
+    job_variables: {}
+  schedules:
+  - cron: 58 8 * * 3
+    timezone: America/Denver
+    day_or: true
+    active: true
+
+- name: humpday_basic_live
+  version: null
+  tags: []
+  description: null
+  entrypoint: flows/strategies.py:humpday_day_trader_basic
+  parameters: {"slack_channel_name": "humpday-day-trader", "account_type": "paper", "prospect_buy_suspend": {"h":1}, "buy_sell_suspend": {"m":30}}
   work_pool:
     name: humpday
     work_queue_name: null
     job_variables: {}
   schedules:
   - cron: 0 9 * * 3
-    timezone: America/Denver
-    day_or: true
-    active: true
-
-- name: trader_live
-  version: null
-  tags: []
-  description: null
-  entrypoint: flows/trader.py:trader
-  parameters: {"slack_channel_name": "humpday-day-trader", "account_type": "paper"}
-  work_pool:
-    name: humpday
-    work_queue_name: null
-    job_variables: {}
-  schedules:
-  - cron: 0 10 * * 3
-    timezone: America/Denver
-    day_or: true
-    active: true
-
-- name: trader_test
-  version: null
-  tags: []
-  description: null
-  entrypoint: flows/trader.py:trader
-  parameters: {"slack_channel_name": "bot-test", "account_type": "paper"}
-  work_pool:
-    name: humpday
-    work_queue_name: null
-    job_variables: {}
-  schedules:
-  - cron: 2 9 * * 3
-    timezone: America/Denver
-    day_or: true
-    active: true
-
-
-- name: reporter_live
-  version: null
-  tags: []
-  description: null
-  entrypoint: flows/reporter.py:reporter
-  parameters: {"slack_channel_name": "humpday-day-trader", "account_type": "paper"}
-  work_pool:
-    name: humpday
-    work_queue_name: null
-    job_variables: {}
-  schedules:
-  - cron: 30 10 * * 3
-    timezone: America/Denver
-    day_or: true
-    active: true
-
-
-- name: reporter_test
-  version: null
-  tags: []
-  description: null
-  entrypoint: flows/reporter.py:reporter
-  parameters: {"slack_channel_name": "bot-test", "account_type": "paper"}
-  work_pool:
-    name: humpday
-    work_queue_name: null
-    job_variables: {}
-  schedules:
-  - cron: 8 9 * * 3
     timezone: America/Denver
     day_or: true
     active: true

@@ -72,13 +72,15 @@ def get_market_price(ticker: str) -> float:
 
 @flow(log_prints=True)
 def trader(
+    ticker: str | None = None,
     account_type: AccountType = AccountType.PAPER,
-    slack_channel_name: str = "bot-test",
+    slack_channel_name: const.SlackChannelName = const.SlackChannelName.BOT_TEST,
 ):
 
     # get the current ticker
-    with open(const.CURRENT_STOCK_FILE, "r") as f:
-        ticker = f.readlines()[0]
+    if ticker is None:
+        with open(const.CURRENT_STOCK_FILE, "r") as f:
+            ticker = f.readlines()[0]
     print(ticker)
     slack_channel = const.CHANNELS[slack_channel_name]
     market_price = get_market_price(ticker=ticker)
@@ -88,6 +90,7 @@ def trader(
         account_type=account_type,
     )
     post_to_slack(order=order, market_price=market_price, slack_channel=slack_channel)
+    return order
 
     # write the postition information to a parquet
     # send a request to the alpaca API to sell the stock 30 mintues later
