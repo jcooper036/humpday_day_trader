@@ -12,10 +12,9 @@ from flows.alpaca_client import (
     get_client,
     get_historical_trades,
     get_latest_trade,
-    ALPACA_ACCOUNT_CREDS,
 )
 from flows.const import AccountType, SlackChannelName
-from flows.etf_trading.etf_specs import ETFOption, etf_options
+from flows.etf_trading.etf_specs import etf_options
 
 
 class Position(BaseModel):
@@ -37,7 +36,7 @@ class Portfolio(BaseModel):
 @task
 def get_curent_portfolio(
     cash_to_set_aside: int,
-    etfs: list[ETFOption] = etf_options,
+    etfs: list[str] = etf_options,
     account_type: AccountType = AccountType.PAPER,
 ) -> Portfolio:
     client = get_client(account_type)
@@ -229,7 +228,7 @@ def wait_for_orders_to_complete(orders):
 @flow(log_prints=True)
 def etf_balancing(
     cash_to_set_aside: int,
-    etfs: list[ETFOption] = etf_options,
+    etfs: list[str] = etf_options,
     account_type: AccountType = AccountType.PAPER,
     sell_balancing=False,
     slack_channel_name: SlackChannelName = SlackChannelName.BOT_TEST,

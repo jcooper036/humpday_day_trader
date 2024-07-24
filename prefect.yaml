@@ -50,3 +50,19 @@ deployments:
     timezone: America/Denver
     day_or: true
     active: true
+
+- name: etf_balance_testing
+  version: null
+  tags: []
+  description: null
+  entrypoint: flows/etf_trading/strategy.py:etf_balancing
+  parameters: {"cash_to_set_aside": 50000, "account_type": "paper", "sell_balancing": False, "slack_channel_name": "bot-test"}
+  work_pool:
+    name: humpday
+    work_queue_name: null
+    job_variables: {}
+  schedules:
+  - cron: 31 7 * * 3
+    timezone: America/Denver
+    day_or: true
+    active: true
