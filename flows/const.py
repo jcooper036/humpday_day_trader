@@ -1,6 +1,7 @@
 import enum
 from pydantic import BaseModel
 
+from flows import env
 
 CURRENT_STOCK_FILE = "flows/data/current_stock.txt"
 CURRENT_MKDOWN_FILE = "flows/data/report.md"
@@ -32,6 +33,7 @@ CHANNELS = {
         name="humpday-day-trader",
     ),
 }
+
 
 
 ALPACA_URL = {

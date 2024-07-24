@@ -7,8 +7,9 @@ from prefect_slack import SlackCredentials
 from prefect_slack.messages import send_chat_message
 
 import flows.const as const
+from flows.const import AccountType
 import flows.env as env
-from flows.alpaca_client import get_client, AccountType
+from flows.alpaca_client import get_client
 
 
 @task
