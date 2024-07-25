@@ -263,9 +263,9 @@ def etf_balancing(
     )
     buy_orders = create_rebalance_buy_orders(portfolio, rebalance_targets)
     print(f"{buy_orders=}")
-    # buy_order_reciepts = process_orders(buy_orders)
-    # print(f"{buy_order_reciepts=}")
-    # wait_for_orders_to_complete(buy_order_reciepts)
+    buy_order_reciepts = process_orders(buy_orders)
+    print(f"{buy_order_reciepts=}")
+    wait_for_orders_to_complete(buy_order_reciepts)
 
     # commence buying and selling
     # compare 3 month and 1 month window to the SNP and Nasdaq
