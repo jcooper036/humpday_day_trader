@@ -1,9 +1,14 @@
 from datetime import timedelta
 from decimal import Decimal
+import time
 from typing import Optional
 
-from alpaca.trading.requests import MarketOrderRequest, StopLossRequest
-from alpaca.trading.enums import OrderSide, TimeInForce
+from alpaca.trading.requests import (
+    MarketOrderRequest,
+    StopLossRequest,
+    GetOrdersRequest,
+)
+from alpaca.trading.enums import OrderSide, TimeInForce, QueryOrderStatus
 from prefect import flow, task
 from pydantic import BaseModel
 import requests
@@ -224,8 +229,33 @@ def process_orders(
 
 
 @task
-def wait_for_orders_to_complete(orders):
-    pass
+def wait_for_orders_to_complete(
+    symbol: list[str],
+    account_type: AccountType,
+    max_retries,
+):
+    client = get_client(account_type=account_type)
+    request_params = GetOrdersRequest(
+        symbols=[symbol],
+    )
+    # orders will exist if they are not closed yet
+    orders = client.get_orders(request_params)
+    total_tries = 0
+    # for the first few tries we'll try quickly
+    # after that, slow down the retries, because it's probably going
+    # to be a while
+    max_retries = 60
+    retry_timing = [10, 10, 20, 60, 300]  # seconds
+    while not len(orders) > 0 and total_tries < max_retries:
+        orders = client.get_orders(request_params)
+        if len(retry_timing) < total_tries:
+            wait_time = retry_timing[total_tries]
+        else:
+            wait_time = 3600  # default is 1 hour
+        time.sleep(wait_time)
+        total_tries += 1
+    if total_tries == max_retries:
+        raise ValueError(f"order for {symbol} was not proccesed in {max_retries} tries")
 
 
 @flow(log_prints=True)
@@ -268,7 +298,8 @@ def etf_balancing(
     print(f"{buy_orders=}")
     buy_order_reciepts = process_orders(buy_orders)
     print(f"{buy_order_reciepts=}")
-    wait_for_orders_to_complete(buy_order_reciepts)
+    for symbol in etfs:
+        wait_for_orders_to_complete(symbol=symbol, account_type=account_type)
 
     # commence buying and selling
     # compare 3 month and 1 month window to the SNP and Nasdaq
