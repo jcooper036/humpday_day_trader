@@ -195,7 +195,9 @@ def create_rebalance_buy_orders(portfolo: Portfolio, rebalance_targets: dict):
         current_price = [
             p.current_price for p in portfolo.positions if p.symbol == symbol
         ][0]
-        buy_qty = money_to_spend / current_price
+        buy_qty = int(
+            money_to_spend / current_price
+        )  # many of these aren't fractionable
         orders.append(
             MarketOrderRequest(
                 symbol=symbol,
@@ -208,6 +210,7 @@ def create_rebalance_buy_orders(portfolo: Portfolio, rebalance_targets: dict):
     return orders
 
 
+@task
 def process_orders(
     order_datas: list[MarketOrderRequest],
     account_type: AccountType = AccountType.PAPER,
