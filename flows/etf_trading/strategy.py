@@ -8,10 +8,10 @@ from alpaca.trading.requests import (
     StopLossRequest,
     GetOrdersRequest,
 )
-from alpaca.trading.enums import OrderSide, TimeInForce, QueryOrderStatus
+from alpaca.trading.enums import OrderSide, TimeInForce
 from prefect import flow, task
+from prefect_ray.task_runners import RayTaskRunner
 from pydantic import BaseModel
-import requests
 
 from flows.alpaca_client import (
     get_client,
@@ -232,7 +232,7 @@ def process_orders(
 def wait_for_orders_to_complete(
     symbol: list[str],
     account_type: AccountType,
-    max_retries,
+    max_retries: int = 60,
 ):
     client = get_client(account_type=account_type)
     request_params = GetOrdersRequest(
@@ -244,21 +244,24 @@ def wait_for_orders_to_complete(
     # for the first few tries we'll try quickly
     # after that, slow down the retries, because it's probably going
     # to be a while
-    max_retries = 60
     retry_timing = [10, 10, 20, 60, 300]  # seconds
-    while not len(orders) > 0 and total_tries < max_retries:
+    while (len(orders) > 0) and (total_tries < max_retries):
         orders = client.get_orders(request_params)
-        if len(retry_timing) < total_tries:
+        if len(retry_timing) > total_tries:
             wait_time = retry_timing[total_tries]
         else:
             wait_time = 3600  # default is 1 hour
+        print(f"Waiting for {symbol} order to clear: check in {wait_time} seconds")
         time.sleep(wait_time)
         total_tries += 1
     if total_tries == max_retries:
         raise ValueError(f"order for {symbol} was not proccesed in {max_retries} tries")
 
 
-@flow(log_prints=True)
+@flow(
+    log_prints=True,
+    task_runner=RayTaskRunner(),
+)
 def etf_balancing(
     cash_to_set_aside: int,
     etfs: list[str] | None = etf_options,
@@ -298,8 +301,14 @@ def etf_balancing(
     print(f"{buy_orders=}")
     buy_order_reciepts = process_orders(buy_orders)
     print(f"{buy_order_reciepts=}")
-    for symbol in etfs:
-        wait_for_orders_to_complete(symbol=symbol, account_type=account_type)
+
+    # don't need to wrap in ummapped because they are
+    # not iterable arguments
+    wait_for_orders_to_complete.map(
+        symbol=etfs,
+        account_type=account_type,
+        max_retries=60,
+    )
 
     # commence buying and selling
     # compare 3 month and 1 month window to the SNP and Nasdaq
