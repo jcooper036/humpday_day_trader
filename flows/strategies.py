@@ -17,7 +17,9 @@ class SuspendConfig(BaseModel):
 
 @task
 def suspend(config: SuspendConfig):
-    time.sleep((config.h * 3600) + (config.m * 60) + config.s)
+    total_wait = (config.h * 3600) + (config.m * 60) + config.s
+    print(f"waiting for {total_wait} seconds")
+    time.sleep(total_wait)
 
 
 @flow(
@@ -25,13 +27,16 @@ def suspend(config: SuspendConfig):
     name="humpday_day_trader_basic",
 )
 def humpday_day_trader_basic(
-    prospect_buy_suspend: SuspendConfig = SuspendConfig(h=1),
-    buy_sell_suspend: SuspendConfig = SuspendConfig(m=30),
+    prospect_buy_suspend: SuspendConfig,
+    buy_sell_suspend: SuspendConfig,
     ticker: str | None = None,
     account_type: AccountType = AccountType.PAPER,
     slack_channel_name: SlackChannelName = SlackChannelName.BOT_TEST,
 ):
-    ticker = prospector(ticker=ticker)
+    ticker = prospector(
+        ticker=ticker,
+        slack_channel_name=slack_channel_name,
+    )
     suspend(prospect_buy_suspend)
     order = trader(
         ticker=ticker,

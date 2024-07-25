@@ -47,16 +47,16 @@ def get_curent_portfolio(
     positions = [p for p in positions if p.symbol in etfs]
     new_positions = []
     for etf in etfs:
-        if etf.value not in [p.symbol for p in positions]:
+        if etf not in [p.symbol for p in positions]:
             data = get_latest_trade(
-                symbols=[etf.value],
+                symbols=[etf],
                 account_type=account_type,
             )
-            price = data["trades"][etf.value]["p"]
+            price = data["trades"][etf]["p"]
             new_positions.append(
                 Position(
                     new=True,
-                    symbol=etf.value,
+                    symbol=etf,
                     qty=0,
                     market_value=0.0,
                     proportion_portfolio_value=0.0,
