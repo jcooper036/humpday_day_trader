@@ -228,7 +228,7 @@ def wait_for_orders_to_complete(orders):
 @flow(log_prints=True)
 def etf_balancing(
     cash_to_set_aside: int,
-    etfs: list[str] = etf_options,
+    etfs: list[str] | None = etf_options,
     account_type: AccountType = AccountType.PAPER,
     sell_balancing=False,
     slack_channel_name: SlackChannelName = SlackChannelName.BOT_TEST,
