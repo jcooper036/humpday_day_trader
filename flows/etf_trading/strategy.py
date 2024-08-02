@@ -203,15 +203,16 @@ def create_rebalance_buy_orders(portfolo: Portfolio, rebalance_targets: dict):
         buy_qty = int(
             money_to_spend / current_price
         )  # many of these aren't fractionable
-        orders.append(
-            MarketOrderRequest(
-                symbol=symbol,
-                qty=buy_qty,
-                side=OrderSide.BUY,
-                time_in_force=TimeInForce.DAY,
-                stop_loss=StopLossRequest(stop_price=float(current_price) * 0.85),
+        if buy_qty > 0:
+            orders.append(
+                MarketOrderRequest(
+                    symbol=symbol,
+                    qty=buy_qty,
+                    side=OrderSide.BUY,
+                    time_in_force=TimeInForce.DAY,
+                    stop_loss=StopLossRequest(stop_price=float(current_price) * 0.85),
+                )
             )
-        )
     return orders
 
 
