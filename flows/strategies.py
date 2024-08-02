@@ -19,7 +19,8 @@ class SuspendConfig(BaseModel):
 def suspend(config: SuspendConfig):
     total_wait = (config.h * 3600) + (config.m * 60) + config.s
     print(f"waiting for {total_wait} seconds")
-    time.sleep(total_wait)
+    for i in range(total_wait):
+        time.sleep(1)
 
 
 @flow(
