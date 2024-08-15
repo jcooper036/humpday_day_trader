@@ -3,7 +3,7 @@ import time
 from pydantic import BaseModel
 from prefect import flow, task
 
-from flows.prospecter import prospector
+from flows.prospector import prospector
 from flows.reporter import reporter
 from flows.trader import trader
 from flows.const import AccountType, SlackChannelName
