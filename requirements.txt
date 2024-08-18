@@ -5,6 +5,7 @@ pandas
 prefect>=2.0.0
 prefect-slack
 prefect-dask
+prefect-ray
 pytest
 python-dotenv
 requests
