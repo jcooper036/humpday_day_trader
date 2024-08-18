@@ -30,7 +30,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 0 9 * * 3-4
+  - cron: 0 9 * * 1-5
     timezone: America/Denver
     day_or: true
     active: true
@@ -46,7 +46,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 2 9 * * 3-4
+  - cron: 1 9 * * 1-5
     timezone: America/Denver
     day_or: true
     active: true
@@ -62,7 +62,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 0 10 * * 3-4
+  - cron: 0 10 * * 3
     timezone: America/Denver
     day_or: true
     active: true
@@ -78,7 +78,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 3 9 * * 3-4
+  - cron: 5 9 * * 1-5
     timezone: America/Denver
     day_or: true
     active: true
@@ -94,7 +94,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 30 10 * * 3-4
+  - cron: 30 10 * * 3
     timezone: America/Denver
     day_or: true
     active: true
