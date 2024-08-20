@@ -30,7 +30,23 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 0 9 * * 1-5
+  - cron: 0 9 * * 3
+    timezone: America/Denver
+    day_or: true
+    active: true
+
+- name: prospector_test
+  version: null
+  tags: []
+  description: null
+  entrypoint: flows/prospector.py:prospector
+  parameters: {"slack_channel_name": "bot-test"}
+  work_pool:
+    name: humpday
+    work_queue_name: null
+    job_variables: {}
+  schedules:
+  - cron: 0 9 * * 1-2
     timezone: America/Denver
     day_or: true
     active: true
@@ -46,7 +62,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 1 9 * * 1-5
+  - cron: 1 9 * * 1-2
     timezone: America/Denver
     day_or: true
     active: true
@@ -78,7 +94,7 @@ deployments:
     work_queue_name: null
     job_variables: {}
   schedules:
-  - cron: 5 9 * * 1-5
+  - cron: 5 9 * * 1-2
     timezone: America/Denver
     day_or: true
     active: true
