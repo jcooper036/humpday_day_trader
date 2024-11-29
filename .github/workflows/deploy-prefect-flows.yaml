@@ -23,7 +23,7 @@ jobs:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Configure Google Cloud credential helper
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker us-docker.pkg.dev
 
       - name: Setup Python
         uses: actions/setup-python@v5
