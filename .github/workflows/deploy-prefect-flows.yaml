@@ -8,11 +8,22 @@ on:
 jobs:
   deploy:
     name: Deploy
+    permissions:
+      # required to obtain Google Cloud service account credentials
+      id-token: write
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      
+      - name: GCP Auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Configure Google Cloud credential helper
+        run: gcloud auth configure-docker --quiet us-east1-docker.pkg.dev
 
       - name: Setup Python
         uses: actions/setup-python@v5
