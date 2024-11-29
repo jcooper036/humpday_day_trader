@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, timedelta
 
 import finnhub
@@ -20,9 +21,11 @@ matplotlib.use("agg")
 
 def get_wikipedia_nasdaq100() -> pd.DataFrame:
     url = "https://en.m.wikipedia.org/wiki/Nasdaq-100"
-    return pd.read_html(url, attrs={"id": "constituents"}, index_col="Ticker")[
-        0
-    ].reset_index()
+    return (
+        pd.read_html(url, attrs={"id": "constituents"}, index_col="Symbol")[0]
+        .reset_index()
+        .rename(columns={"Symbol": "Ticker"})
+    )
 
 
 @task
@@ -155,12 +158,11 @@ def build_report(stock_data):
 
 
 @task
-async def send_prospect_report(
+async def send_prospect_message(
     slack_credentials,
     mkdown_data,
     slack_channel: const.SlackChannel,
 ):
-    client = slack_credentials.get_client()
     blocks = [
         {
             "type": "section",
@@ -182,14 +184,23 @@ async def send_prospect_report(
             "text": {"type": "mrkdwn", "text": mkdown_data.split(" | ")[1]},
         },
     ]
-    send_chat_message(
+    await send_chat_message(
         slack_credentials=slack_credentials,
         slack_blocks=blocks,
         channel=slack_channel.name,
+        text=f'{mkdown_data.split(" | ")[0]}\n{mkdown_data.split(" | ")[1]}',
     )
-    result = await client.files_upload_v2(
+
+
+@task
+async def send_prospect_graph(
+    slack_credentials,
+    slack_channel: const.SlackChannel,
+):
+    client = slack_credentials.get_client()
+    _ = await client.files_upload_v2(
         file=const.CURRENT_PLOT_FILE,
-        channels=slack_channel.id,
+        channel=slack_channel.id,
         title="bomb proof technical analysis",
     )
     # can't do this because not paid workspace
@@ -212,13 +223,21 @@ def prospector(
     stock_data = get_stock_data(stock)
     mkdown_data = build_report(stock_data=stock_data)
     slack_credentials = SlackCredentials.load("slackbot-cred")
-    send_prospect_report(
-        slack_credentials=slack_credentials,
-        mkdown_data=mkdown_data,
-        slack_channel=slack_channel,
+    asyncio.run(
+        send_prospect_message(
+            slack_credentials=slack_credentials,
+            mkdown_data=mkdown_data,
+            slack_channel=slack_channel,
+        )
+    )
+    asyncio.run(
+        send_prospect_graph(
+            slack_credentials=slack_credentials,
+            slack_channel=slack_channel,
+        )
     )
     return stock["Ticker"]
 
 
 if __name__ == "__main__":
-    prospector()
+    prospector(slack_channel_name="bot-test")
