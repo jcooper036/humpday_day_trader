@@ -42,10 +42,10 @@ def save_current_stock(stock: dict):
     def safe_open_w(path):
         """Open "path" for writing, creating any parent directories as needed."""
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        return open(path, "w")
+        return open(path, "w+")
 
-    print(os.getcwd())
-    with safe_open_w(const.CURRENT_STOCK_FILE, "w+") as f:
+    p = os.path.join(os.getcwd(), const.CURRENT_STOCK_FILE)
+    with safe_open_w(p) as f:
         f.write(stock["Ticker"])
 
 
