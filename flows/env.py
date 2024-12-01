@@ -7,7 +7,7 @@ from flows.utils.secret_access import get_gsm_secret
 FINNHUB_API_KEY = get_gsm_secret(secret_name="finnhub_api_key")
 ALPACA_PAPER_API_KEY = get_gsm_secret(secret_name="alpaca_paper_api_key")
 ALPACA_PAPER_API_SECRET = get_gsm_secret(secret_name="alpaca_paper_api_secret")
-ALPACA_LIVE_API_API = ""
+ALPACA_LIVE_API_KEY = ""
 ALPACA_LIVE_API_SECRET = ""
 # FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY")
 # ALPACA_LIVE_API_KEY = os.environ.get("ALPACA_LIVE_API_KEY")
