@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime, timedelta
+import os
 
 import finnhub
 import matplotlib
@@ -38,7 +39,13 @@ def pick_stock(ticker: str | None = None) -> dict:
 
 @task
 def save_current_stock(stock: dict):
-    with open(const.CURRENT_STOCK_FILE, "w+") as f:
+    def safe_open_w(path):
+        """Open "path" for writing, creating any parent directories as needed."""
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        return open(path, "w")
+
+    print(os.getcwd())
+    with safe_open_w(const.CURRENT_STOCK_FILE, "w+") as f:
         f.write(stock["Ticker"])
 
 
