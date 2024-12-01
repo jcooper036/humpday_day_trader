@@ -1,5 +1,6 @@
 alpaca-py
 finnhub-python
+google-cloud-secret-manager
 lxml
 pandas
 prefect>=2.0.0
