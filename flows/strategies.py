@@ -1,7 +1,7 @@
 import time
 
 from pydantic import BaseModel
-from prefect import flow, task, pause
+from prefect import flow, task
 
 from flows.prospector import prospector
 from flows.reporter import reporter
