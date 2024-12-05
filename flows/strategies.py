@@ -1,7 +1,7 @@
 import time
 
 from pydantic import BaseModel
-from prefect import flow, task
+from prefect import flow, task, pause
 
 from flows.prospector import prospector
 from flows.reporter import reporter
@@ -21,11 +21,14 @@ def suspend(config: SuspendConfig):
     print(f"waiting for {total_wait} seconds")
     for i in range(total_wait):
         time.sleep(1)
+        if i % 60 == 0 and i > 0:
+            print(f"... sleeping for {total_wait-i} more seconds")
 
 
 @flow(
     log_prints=True,
     name="humpday_day_trader_basic",
+    retries=0,
 )
 def humpday_day_trader_basic(
     prospect_buy_suspend: SuspendConfig,
@@ -48,6 +51,27 @@ def humpday_day_trader_basic(
     reporter(
         ticker=ticker,
         account_type=account_type,
+        slack_channel_name=slack_channel_name,
+    )
+
+
+@flow(
+    log_prints=True,
+    name="suspend_test",
+    retries=0,
+)
+def suspend_test(
+    suspend_time: SuspendConfig,
+    ticker: str | None = None,
+    slack_channel_name: SlackChannelName = SlackChannelName.BOT_TEST,
+):
+    ticker = prospector(
+        ticker=ticker,
+        slack_channel_name=slack_channel_name,
+    )
+    suspend(suspend_time)
+    ticker = prospector(
+        ticker=ticker,
         slack_channel_name=slack_channel_name,
     )
 

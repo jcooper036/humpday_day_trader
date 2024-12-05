@@ -103,3 +103,18 @@ deployments:
     active: true
   concurrency_limit:
   enforce_parameter_schema: true
+
+- name: suspend_test
+  version:
+  tags: []
+  description: "Test flow for suspending between tasks"
+  entrypoint: flows/strategies.py:suspend_test
+  parameters: {"slack_channel_name": "humpday-day-trader", "suspend": {"m": 15},}
+  work_pool:
+    name: gcp-humpday
+    work_queue_name: default
+    job_variables:
+      image: '{{ build_image.image }}'
+  schedule: {}
+  concurrency_limit:
+  enforce_parameter_schema: true
