@@ -1,3 +1,5 @@
+import asyncio
+
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.models import Order
@@ -13,7 +15,12 @@ from flows.alpaca_client import get_client
 
 
 @task
-def post_to_slack(order: Order, market_price: float, slack_channel: const.SlackChannel):
+async def post_to_slack(
+    order: Order,
+    market_price: float,
+    slack_channel: const.SlackChannel,
+    slack_credentials,
+):
     blocks = [
         {
             "type": "section",
@@ -38,8 +45,8 @@ def post_to_slack(order: Order, market_price: float, slack_channel: const.SlackC
             },
         },
     ]
-    slack_credentials = SlackCredentials.load("slackbot-cred")
-    send_chat_message(
+
+    await send_chat_message(
         slack_credentials=slack_credentials,
         slack_blocks=blocks,
         channel=slack_channel.name,
@@ -90,7 +97,15 @@ def trader(
         market_price=market_price,
         account_type=account_type,
     )
-    post_to_slack(order=order, market_price=market_price, slack_channel=slack_channel)
+    slack_credentials = SlackCredentials.load("slackbot-cred")
+    asyncio.run(
+        post_to_slack(
+            order=order,
+            market_price=market_price,
+            slack_channel=slack_channel,
+            slack_credentials=slack_credentials,
+        )
+    )
     return order
 
     # write the postition information to a parquet
