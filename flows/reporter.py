@@ -1,3 +1,5 @@
+import asyncio
+
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 from alpaca.trading.models import Order
@@ -11,7 +13,12 @@ from flows.trader import get_market_price
 
 
 @task
-def post_to_slack(order: Order, market_price: float, slack_channel: const.SlackChannel):
+async def post_to_slack(
+    order: Order,
+    market_price: float,
+    slack_channel: const.SlackChannel,
+    slack_credentials,
+):
     blocks = [
         {
             "type": "section",
@@ -36,8 +43,7 @@ def post_to_slack(order: Order, market_price: float, slack_channel: const.SlackC
             },
         },
     ]
-    slack_credentials = SlackCredentials.load("slackbot-cred")
-    send_chat_message(
+    await send_chat_message(
         slack_credentials=slack_credentials,
         slack_blocks=blocks,
         channel=slack_channel.name,
@@ -74,8 +80,14 @@ def reporter(
     slack_channel = const.CHANNELS[slack_channel_name]
     sell_order = sell_position(account_type=account_type, ticker=ticker)
     market_price = get_market_price(ticker=ticker)
-    post_to_slack(
-        order=sell_order, market_price=market_price, slack_channel=slack_channel
+    slack_credentials = SlackCredentials.load("slackbot-cred")
+    asyncio.run(
+        post_to_slack(
+            order=sell_order,
+            market_price=market_price,
+            slack_credentials=slack_credentials,
+            slack_channel=slack_channel,
+        )
     )
 
     # read the stock name for the file
