@@ -1,4 +1,4 @@
-import os
+from flows.utils.secret_access import get_gsm_secret
 
-etf_options = os.environ.get("ETF_PICKS")
-etf_options = etf_options.split(",") if isinstance(etf_options, str) else []
+gcp_etf_options = get_gsm_secret(secret_name="etf_picks")
+etf_options = gcp_etf_options.split(",") if isinstance(gcp_etf_options, str) else []

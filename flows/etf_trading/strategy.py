@@ -262,6 +262,7 @@ def wait_for_orders_to_complete(
 @flow(
     log_prints=True,
     task_runner=RayTaskRunner(),
+    name="etf_balancing",
 )
 def etf_balancing(
     cash_to_set_aside: int,
