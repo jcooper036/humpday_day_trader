@@ -133,7 +133,7 @@ deployments:
     job_variables:
       image: '{{ build_image.image }}'
   schedules:
-  - cron: 31 7 * * *
+  - cron: 31 7 * * 1-5
     timezone: America/Denver
     day_or: true
     active: true
