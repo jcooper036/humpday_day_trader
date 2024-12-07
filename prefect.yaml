@@ -58,11 +58,7 @@ deployments:
     work_queue_name: default
     job_variables:
       image: '{{ build_image.image }}'
-  schedules:
-  - cron: 30 7 * * 1-2
-    timezone: America/Denver
-    day_or: true
-    active: true
+  schedules: []
   concurrency_limit:
   enforce_parameter_schema: true
 
@@ -79,7 +75,7 @@ deployments:
     job_variables:
       image: '{{ build_image.image }}'
   schedules:
-  - cron: 30 7 * * 1-3
+  - cron: 30 7 * * 3
     timezone: America/Denver
     day_or: true
     active: true
@@ -92,14 +88,14 @@ deployments:
   description: Test flow for prospector
   entrypoint: flows/strategies.py:humpday_day_trader_basic
   parameters: {slack_channel_name: humpday-day-trader, account_type: paper, prospect_buy_suspend: {
-      s: 0}, buy_sell_suspend: {m: 30}}
+      m: 15}, buy_sell_suspend: {m: 30}}
   work_pool:
     name: gcp-humpday
     work_queue_name: default
     job_variables:
       image: '{{ build_image.image }}'
   schedules:
-  - cron: 0 9 * * 3-5
+  - cron: 45 8 * * 3
     timezone: America/Denver
     day_or: true
     active: true
