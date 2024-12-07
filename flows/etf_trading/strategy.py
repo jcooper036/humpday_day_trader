@@ -10,7 +10,6 @@ from alpaca.trading.requests import (
 )
 from alpaca.trading.enums import OrderSide, TimeInForce
 from prefect import flow, task
-from prefect_ray.task_runners import RayTaskRunner
 from pydantic import BaseModel
 
 from flows.alpaca_client import (
@@ -261,7 +260,6 @@ def wait_for_orders_to_complete(
 
 @flow(
     log_prints=True,
-    task_runner=RayTaskRunner(),
     name="etf_balancing",
 )
 def etf_balancing(
