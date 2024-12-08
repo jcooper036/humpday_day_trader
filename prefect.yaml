@@ -64,21 +64,6 @@ deployments:
   work_pool: *gcp-cloud-run-wp
 
 
-- name: prospector_test_gke
-  version: 0.0.0
-  tags: ["test", "gke"]
-  description: Test flow for prospector
-  entrypoint: flows/prospector.py:prospector
-  parameters:
-    slack_channel_name: bot-test
-  schedules: []
-  enforce_parameter_schema: true
-  work_pool:
-    name: "humpday-gke"
-    job_variables:
-      image: "{{ build-image.image }}"
-
-
 - name: humpday_day_trader_basic_test
   version: 0.0.0
   tags: ["test"]
