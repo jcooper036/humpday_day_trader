@@ -28,11 +28,20 @@ pull:
 - prefect.deployments.steps.set_working_directory:
     directory: /opt/prefect/humpday_day_trader
 
+# the definitions section allows you to define reusable components for your deployments
+definitions:
+  work_pool: &gcp-cloud-run-wp
+    name: gcp-humpday
+    work_queue_name: default
+    job_variables:
+      image: '{{ build_image.image }}'
+
+
 # the deployments section allows you to provide configuration for deploying flows
 deployments:
 - name: gcp-weather-deploy
   version:
-  tags: []
+  tags: ["test"]
   description:
   schedules: []
   flow_name:
@@ -40,40 +49,44 @@ deployments:
   parameters:
     lat: 14.5994
     lon: 28.6731
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
+  work_pool: *gcp-cloud-run-wp
+
 
 - name: prospector_test
-  version:
-  tags: []
+  version: 0.0.0
+  tags: ["test"]
   description: Test flow for prospector
   entrypoint: flows/prospector.py:prospector
   parameters:
     slack_channel_name: bot-test
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
   schedules: []
-  concurrency_limit:
   enforce_parameter_schema: true
+  work_pool: *gcp-cloud-run-wp
+
+
+- name: prospector_test_gke
+  version: 0.0.0
+  tags: ["test", "gke"]
+  description: Test flow for prospector
+  entrypoint: flows/prospector.py:prospector
+  parameters:
+    slack_channel_name: bot-test
+  schedules: []
+  enforce_parameter_schema: true
+  work_pool:
+    name: "kubernetes"
+    job_variables:
+      image: "{{ build-image.image }}"
+
 
 - name: humpday_day_trader_basic_test
-  version:
-  tags: []
+  version: 0.0.0
+  tags: ["test"]
   description: Test flow for prospector
   entrypoint: flows/strategies.py:humpday_day_trader_basic
   parameters: {slack_channel_name: bot-test, account_type: paper, prospect_buy_suspend: {
       s: 5}, buy_sell_suspend: {m: 1}}
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
+  work_pool: *gcp-cloud-run-wp
   schedules:
   - cron: 30 7 * * 3
     timezone: America/Denver
@@ -83,58 +96,46 @@ deployments:
   enforce_parameter_schema: true
 
 - name: humpday_day_trader_basic_prod
-  version:
-  tags: []
+  version: 0.0.0
+  tags: ["prod"]
   description: Test flow for prospector
   entrypoint: flows/strategies.py:humpday_day_trader_basic
   parameters: {slack_channel_name: humpday-day-trader, account_type: paper, prospect_buy_suspend: {
       m: 15}, buy_sell_suspend: {m: 30}}
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
   schedules:
   - cron: 45 8 * * 3
     timezone: America/Denver
     day_or: true
     active: true
-  concurrency_limit:
   enforce_parameter_schema: true
+  work_pool: *gcp-cloud-run-wp
+
 
 - name: suspend_test
-  version:
-  tags: []
+  version: 0.0.0
+  tags: ["test"]
   description: Test flow for suspending between tasks
   entrypoint: flows/strategies.py:suspend_test
   parameters:
     slack_channel_name: bot-test
     suspend_time:
       m: 15
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
   schedule: {}
-  concurrency_limit:
   enforce_parameter_schema: true
   schedules: []
+  work_pool: *gcp-cloud-run-wp
+
 
 - name: etf_balance_testing
-  version: null
-  tags: []
+  version: 0.0.0
+  tags: ["test"]
   description: null
   entrypoint: flows/etf_trading/strategy.py:etf_balancing
   parameters: {"cash_to_set_aside": 50000, "account_type": "paper", "sell_balancing": False, "slack_channel_name": "bot-test"}
-  work_pool:
-    name: gcp-humpday
-    work_queue_name: default
-    job_variables:
-      image: '{{ build_image.image }}'
   schedules:
   - cron: 31 7 * * 1-5
     timezone: America/Denver
     day_or: true
     active: true
   enforce_parameter_schema: true
+  work_pool: *gcp-cloud-run-wp
