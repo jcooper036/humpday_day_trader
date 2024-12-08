@@ -74,7 +74,7 @@ deployments:
   schedules: []
   enforce_parameter_schema: true
   work_pool:
-    name: "kubernetes"
+    name: "humpday-gke"
     job_variables:
       image: "{{ build-image.image }}"
 
