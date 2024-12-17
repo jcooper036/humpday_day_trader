@@ -37,7 +37,7 @@ class Portfolio(BaseModel):
     positions: list[Position]
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def get_curent_portfolio(
     cash_to_set_aside: int,
     etfs: list[str] = etf_options,
@@ -166,7 +166,7 @@ def create_rebalance_sell_orders(
     return orders
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def update_portfolio_cash(
     portfolo: Portfolio,
     cash_to_set_aside: int,
@@ -215,7 +215,7 @@ def create_rebalance_buy_orders(portfolo: Portfolio, rebalance_targets: dict):
     return orders
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def process_orders(
     order_datas: list[MarketOrderRequest],
     account_type: AccountType = AccountType.PAPER,
@@ -228,7 +228,7 @@ def process_orders(
     return orders
 
 
-@task
+@task(retries=3, retry_delay_seconds=5)
 def wait_for_orders_to_complete(
     symbol: list[str],
     account_type: AccountType,
