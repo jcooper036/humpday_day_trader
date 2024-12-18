@@ -112,13 +112,27 @@ deployments:
 
 
 - name: etf_balance_testing
-  version: 0.0.0
+  version: 0.1.0
   tags: ["test"]
   description: null
   entrypoint: flows/etf_trading/strategy.py:etf_balancing
   parameters: {"cash_to_set_aside": 10000, "account_type": "paper", "sell_balancing": False, "slack_channel_name": "bot-test"}
   schedules:
-  - cron: 31 7 * * 1-5
+  - cron: 31 7 * * 1-4
+    timezone: America/Denver
+    day_or: true
+    active: true
+  enforce_parameter_schema: true
+  work_pool: *gcp-cloud-run-wp
+
+- name: etf_balance_testing_w_sell
+  version: 0.0.0
+  tags: ["test"]
+  description: null
+  entrypoint: flows/etf_trading/strategy.py:etf_balancing
+  parameters: {"cash_to_set_aside": 10000, "account_type": "paper", "sell_balancing": True, "slack_channel_name": "bot-test"}
+  schedules:
+  - cron: 31 7 * * 5
     timezone: America/Denver
     day_or: true
     active: true
