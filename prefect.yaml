@@ -116,7 +116,7 @@ deployments:
   tags: ["test"]
   description: null
   entrypoint: flows/etf_trading/strategy.py:etf_balancing
-  parameters: {"cash_to_set_aside": 50000, "account_type": "paper", "sell_balancing": False, "slack_channel_name": "bot-test"}
+  parameters: {"cash_to_set_aside": 10000, "account_type": "paper", "sell_balancing": False, "slack_channel_name": "bot-test"}
   schedules:
   - cron: 31 7 * * 1-5
     timezone: America/Denver

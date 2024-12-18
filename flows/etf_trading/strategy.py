@@ -316,4 +316,4 @@ def etf_balancing(
 
 
 if __name__ == "__main__":
-    etf_balancing(cash_to_set_aside=50000)
+    etf_balancing(cash_to_set_aside=10000)
