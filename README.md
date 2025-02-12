@@ -1,5 +1,5 @@
 # humpday_day_trader
-For the stock pick of the week
+For the stock pick of the week, randomly selected from the Nasdaq Top 100
 
 
 # Stetup
